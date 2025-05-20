@@ -1,13 +1,12 @@
 # BASIC FACIAL RECOGNITION PROGRAM
-
 import cv2
 import sys
 import numpy as np
 
 # load the classifier and create a cascade object for face detection
-faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarscascade_frontalface_default.xml")
-eyeCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarscascade_eye.xml")
-smileCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarscascade_smile.xml")
+faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+eyeCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")
+smileCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_smile.xml")
 
 # file validation
 if faceCascade.empty():
@@ -20,8 +19,8 @@ if smileCascade.empty():
     print('--(!)Error loading smile cascade')
     exit()
 
-# sets video source to external webcam (my built in one is missing...)
-cap = cv2.VideoCapture(1)
+# sets video source to external webcam
+cap = cv2.VideoCapture(0)
 
 # camera validation
 if not cap.isOpened():
@@ -35,12 +34,11 @@ while True:
     grayscale = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     # face detection
-    faces = faceCascade.detectMultiscale(
+    faces = faceCascade.detectMultiScale(
             grayscale,
-            scaleFactor=1.1,
+            scaleFactor=1.05,
             minNeighbors=5,
-            minSize=(30,30),
-            flags=cv2.cv.CV_HAAR_SCALE_IMAGE
+            minSize=(35, 35)
         )
 
     for (x, y, w, h) in faces:
@@ -53,10 +51,9 @@ while True:
         # eye detection
         eyes = eyeCascade.detectMultiScale(
             roi_gray,
-            scaleFactor=1.1,
+            scaleFactor=1.05,
             minNeighbors=10,
-            minSize=(15,15),
-            flags=cv2.cv.CV_HAAR_SCALE_IMAGE
+            minSize=(10, 10)
         )
 
         for (ex, ey, ew, eh) in eyes:
@@ -65,14 +62,11 @@ while True:
         smiles = smileCascade.detectMultiScale(
             roi_gray,
             scaleFactor=1.7,
-            minNeighbors=20,
+            minNeighbors=7,
             minSize=(25, 25)
         )
 
-        # IMPLEMENT EMOTION DETECTION HERE
-        # ideally, i want to practice using CNN models
-
-    cv2.imshow('u chose the right career.', frame)
+    cv2.imshow("it's you!", frame)
 
     # exit on q
     if cv2.waitKey(1) & 0xFF == ord('q'):
